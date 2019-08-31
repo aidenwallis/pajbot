@@ -1,0 +1,62 @@
+version: '2'
+
+services:
+  mariadb:
+    image: mariadb
+    restart: always
+    command: --wait_timeout=28800
+    environment:
+      MYSQL_ROOT_PASSWORD: penis123
+      MYSQL_DATABASE: pajbot
+    volumes:
+     - pajbot-mariadb:/var/lib/mysql
+
+  redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - pajbot-redis:/data
+
+  traefik:
+    image: traefik
+    restart: always
+    depends_on:
+    command: --api --docker --docker.exposedbydefault=false
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  pajbot-${STREAMERNAME}:
+    image: pajbot
+    restart: always
+    depends_on:
+      - mariadb
+      - redis
+    links:
+      - mariadb
+      - redis
+    volumes:
+      - '/opt/pajbot/:/app/configs'
+      - '/etc/timezone:/etc/timezone:ro'
+      - '/etc/localtime:/etc/localtime:ro'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:${DOMAIN}"
+      - "traefik.port=8855"
+      - "traefik.web.frontend.rule=Host:${DOMAIN}"
+      - "traefik.web.port=8855"
+      - "traefik.ws.frontend.rule=Host:${DOMAIN};Path:/ws"
+      - "traefik.ws.port=5555"
+    environment:
+      - CONFIG: scriptorex.ini
+
+volumes:
+  pajbot-redis:
+    driver: local
+  pajbot-pgadmin:
+    driver: local
+  pajbot-mariadb:
+    driver: local
