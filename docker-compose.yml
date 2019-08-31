@@ -20,7 +20,6 @@ services:
   traefik:
     image: traefik
     restart: always
-    depends_on:
     command: --api --docker --docker.exposedbydefault=false
     ports:
       - "80:80"
@@ -51,7 +50,7 @@ services:
       - "traefik.ws.frontend.rule=Host:${DOMAIN};Path:/ws"
       - "traefik.ws.port=5555"
     environment:
-      - CONFIG: scriptorex.ini
+      CONFIG: ${CONFIG}
 
 volumes:
   pajbot-redis:
