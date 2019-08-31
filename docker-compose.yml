@@ -30,7 +30,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   pajbot:
-    image: pajbot
+    image: leppunen/pajbot:test
     restart: always
     depends_on:
       - mariadb
