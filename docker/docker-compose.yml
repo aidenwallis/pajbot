@@ -1,4 +1,4 @@
-version: '3.7'
+version: '2.1'
 
 services:
   mariadb:
@@ -13,10 +13,10 @@ services:
     volumes:
      - pajbot-mariadb:/var/lib/mysql
     healthcheck:
-        test: "/usr/bin/mysql --user=root --password=penis123 --execute \"SHOW DATABASES;\""
-        interval: 2s
-        timeout: 20s
-        retries: 10
+      test: "/usr/bin/mysql --user=root --password=penis123 --execute \"SHOW DATABASES;\""
+      interval: 2s
+      timeout: 20s
+      retries: 10
 
   redis:
     image: redis:alpine
@@ -26,17 +26,17 @@ services:
     volumes:
       - pajbot-redis:/data
     healthcheck:
-        test: ["CMD", "redis-cli","ping"]
-        interval: 30s
-        timeout: 10s
-        retries: 3
+      test: ["CMD", "redis-cli","ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   traefik:
     image: traefik
     restart: always
     container_name: traefik
     network_mode: bridge
-    command: --api --docker --docker.exposedbydefault=false
+    command: --api --docker --docker.exposedbydefault=false --ping
     ports:
       - "80:80"
       - "443:443"
@@ -44,15 +44,15 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     healthcheck:
-        test: ["CMD", "redis-cli","ping"]
-        interval: 30s
-        timeout: 10s
-        retries: 3
+      test: ["CMD", "/traefik" ,"healthcheck", "--ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 30
 
   pajbot:
     image: leppunen/pajbot:test
     restart: always
-    container_name: pajbot-${STREAMERNAME}
+    container_name: pajbot-${STREAMERNAME:?STREAMERNAME}
     network_mode: bridge
     depends_on:
        redis:
@@ -61,23 +61,18 @@ services:
          condition: service_healthy
        traefik:
          condition: service_healthy
-    links:
-      - mariadb
-      - redis
     volumes:
       - '/opt/pajbot/:/app/configs'
       - '/etc/timezone:/etc/timezone:ro'
       - '/etc/localtime:/etc/localtime:ro'
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:${DOMAIN}"
-      - "traefik.port=8855"
-      - "traefik.web.frontend.rule=Host:${DOMAIN}"
+      - "traefik.web.frontend.rule=Host:${DOMAIN:?DOMAIN}"
       - "traefik.web.port=8855"
-      - "traefik.ws.frontend.rule=Host:${DOMAIN};Path:/ws"
+      - "traefik.ws.frontend.rule=Host:${DOMAIN:?DOMAIN};Path:/ws"
       - "traefik.ws.port=5555"
     environment:
-      CONFIG: ${CONFIG}
+      CONFIG: ${CONFIG:?CONFIG}
 
 volumes:
   pajbot-redis:
