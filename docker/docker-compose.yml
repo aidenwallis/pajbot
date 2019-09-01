@@ -1,25 +1,41 @@
-version: '2'
+version: '3.7'
 
 services:
   mariadb:
     image: mariadb
     restart: always
+    container_name: mariadb
+    network_mode: bridge
     command: --wait_timeout=28800
     environment:
       MYSQL_ROOT_PASSWORD: penis123
       MYSQL_DATABASE: pajbot
     volumes:
      - pajbot-mariadb:/var/lib/mysql
+    healthcheck:
+        test: "/usr/bin/mysql --user=root --password=penis123 --execute \"SHOW DATABASES;\""
+        interval: 2s
+        timeout: 20s
+        retries: 10
 
   redis:
     image: redis:alpine
     restart: always
+    container_name: redis
+    network_mode: bridge
     volumes:
       - pajbot-redis:/data
+    healthcheck:
+        test: ["CMD", "redis-cli","ping"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
 
   traefik:
     image: traefik
     restart: always
+    container_name: traefik
+    network_mode: bridge
     command: --api --docker --docker.exposedbydefault=false
     ports:
       - "80:80"
@@ -27,13 +43,24 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+        test: ["CMD", "redis-cli","ping"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
 
   pajbot:
     image: leppunen/pajbot:test
     restart: always
+    container_name: pajbot-${STREAMERNAME}
+    network_mode: bridge
     depends_on:
-      - mariadb
-      - redis
+       redis:
+         condition: service_healthy
+       mariadb:
+         condition: service_healthy
+       traefik:
+         condition: service_healthy
     links:
       - mariadb
       - redis
@@ -55,7 +82,7 @@ services:
 volumes:
   pajbot-redis:
     driver: local
-  pajbot-pgadmin:
-    driver: local
+    name: pajbot-redis
   pajbot-mariadb:
     driver: local
+    name: pajbot-mariadb
