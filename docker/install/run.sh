@@ -1,7 +1,7 @@
 #!/bin/sh
 if test -f "/app/configs/$STREAMERNAME.ini"; then
     echo "Config file exists for the given streamer. Execute the bot"
-    /usr/bin/supervisord -c /app/docker/supervisord.conf
+    exec /usr/bin/supervisord -c /app/docker/supervisord.conf
 else 
     echo "Config file does not exist for the given streamer. Running first time setup."
     cp /app/docker/config.ini.template /app/configs/$STREAMERNAME.ini.temp
@@ -85,6 +85,6 @@ else
     fi
 
     mv /app/configs/$STREAMERNAME.ini.temp /app/configs/$STREAMERNAME.ini
-    /usr/bin/supervisord -c /app/docker/supervisord.conf
+    exec /usr/bin/supervisord -c /app/docker/supervisord.conf
 
 fi
