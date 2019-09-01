@@ -75,7 +75,19 @@ services:
       - "traefik.ws.frontend.rule=Host:${DOMAIN:?DOMAIN};Path:/ws"
       - "traefik.ws.port=5555"
     environment:
-      CONFIG: ${CONFIG:?CONFIG}
+      STREAMERNAME: ${STREAMERNAME:?STREAMERNAME is not defined}
+      ADMIN: ${ADMIN:?ADMIN is not defined}
+      BOTNAME: ${BOTNAME:?BOTNAME is not defined}
+      DOMAIN: ${DOMAIN:?DOMAIN is not defined}
+      CLID: ${CLID:?CLID is not defined}
+      CLSEC: ${CLSEC:?CLSEC is not defined}
+      HUB: ${HUB}
+      REDISHOST: ${REDISHOST}
+      YTKEY: ${YTKEY}
+      TWKEY: ${TWKEY}
+      TWSECRET: ${TWSECRET}
+      TWTOKEN: ${TWTOKEN}
+      TWTOKENSECRET: ${TWTOKENSECRET}
 
 volumes:
   pajbot-redis:
