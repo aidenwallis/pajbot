@@ -36,13 +36,27 @@ services:
     restart: always
     container_name: traefik
     network_mode: bridge
-    command: --api --docker --docker.exposedbydefault=false --ping
+    command:
+      - --api
+      - --ping
+      - --entrypoints=Name:http Address::80
+      - --entrypoints=Name:https Address::443 TLS
+      - --defaultentrypoints=http,https
+      - --acme
+      - --acme.storage=/data/acme.json
+      - --acme.entryPoint=https
+      - --acme.httpChallenge.entryPoint=http
+      - --acme.onHostRule=true
+      - --docker
+      - --docker.watch
+      - --docker.exposedbydefault=false
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - pajbot-traefik:/data
     healthcheck:
       test: ["CMD", "/traefik" ,"healthcheck", "--ping"]
       interval: 30s
@@ -74,6 +88,8 @@ services:
       - "traefik.web.port=8855"
       - "traefik.ws.frontend.rule=Host:${DOMAIN:?DOMAIN};Path:/ws"
       - "traefik.ws.port=5555"
+      - "traefik.frontend.entryPoints=${SSLConfig:-http,https}"
+      - "traefik.frontend.headers.SSLRedirect=${REDIRECT:-true}"
     environment:
       STREAMERNAME: ${STREAMERNAME:?STREAMERNAME is not defined}
       ADMIN: ${ADMIN:?ADMIN is not defined}
@@ -97,3 +113,6 @@ volumes:
   pajbot-mariadb:
     driver: local
     name: pajbot-mariadb
+  pajbot-traefik:
+    driver: local
+    name: pajbot-traefik
