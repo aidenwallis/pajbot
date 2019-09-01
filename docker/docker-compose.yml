@@ -61,6 +61,9 @@ services:
          condition: service_healthy
        traefik:
          condition: service_healthy
+    links:
+      - redis
+      - mariadb
     volumes:
       - '/opt/pajbot/:/app/configs'
       - '/etc/timezone:/etc/timezone:ro'

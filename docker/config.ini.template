@@ -1,0 +1,53 @@
+[main]
+trusted_mods = 0
+nickname = <<BOTNAME>>
+streamer = <<STREAMER>>
+admin = <<ADMIN>>
+control_hub = <<HUB>>
+db = mysql+pymysql://root:penis123@mariadb/pb_<<STREAMER>>?charset=utf8mb4
+timezone = <<TZ>>
+
+[web]
+deck_tab_images = 1
+modules = linefarming playsounds
+streamer_name = <<STREAMER>>
+domain = <<DOMAIN>>
+
+[streamelements]
+client_id = abc
+client_secret = def
+
+[streamlabs]
+client_id = abc
+client_secret = def
+
+[phrases]
+welcome = {nickname} {version} running!
+quit = {nickname} {version} shutting down...
+
+[twitchapi]
+client_id = <<CLID>>
+client_secret = <<CLSEC>>
+redirect_uri = http://<<DOMAIN>>/login/authorized
+
+[twitter]
+consumer_key = <<TWKEY>>
+consumer_secret = <<TWSECRET>>
+access_token = <<TWTOKEN>>
+access_token_secret = <<TWTOKENSECRET>>
+streaming = 0
+
+[flags]
+silent = 0
+dev = 1
+
+[websocket]
+enabled = 1
+port = 5555
+host = ws://<<DOMAIN>>/ws
+
+[redis]
+host = <<REDISHOST>>
+
+[youtube]
+developer_key = <<YTKEY>>
