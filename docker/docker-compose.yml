@@ -88,7 +88,7 @@ services:
       - "traefik.web.port=8855"
       - "traefik.ws.frontend.rule=Host:${DOMAIN:?DOMAIN};Path:/ws"
       - "traefik.ws.port=5555"
-      - "traefik.frontend.entryPoints=${SSLConfig:-http,https}"
+      - "traefik.frontend.entryPoints=${SSLCONFIG:?SSLCONFIG is not defined. set it to http for no SSL or http,https for SSL}"
       - "traefik.frontend.headers.SSLRedirect=${REDIRECT:-true}"
     environment:
       STREAMERNAME: ${STREAMERNAME:?STREAMERNAME is not defined}
