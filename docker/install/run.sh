@@ -35,6 +35,13 @@ else
         exit 1
     fi
 
+    if [ $TZ ]; then
+        sed -i 's|<<TZ>>|'$TZ'|g' /app/configs/$STREAMERNAME.ini.temp
+    else
+        echo "Timezone missing. Please provide the timezone via the TZ environment variable."
+        exit 1
+    fi
+
     if [ $CLID ] && [ $CLSEC ]; then
         sed -i 's|<<CLID>>|'$CLID'|g' /app/configs/$STREAMERNAME.ini.temp
         sed -i 's|<<CLSEC>>|'$CLSEC'|g' /app/configs/$STREAMERNAME.ini.temp

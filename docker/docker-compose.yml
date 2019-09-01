@@ -79,6 +79,7 @@ services:
       ADMIN: ${ADMIN:?ADMIN is not defined}
       BOTNAME: ${BOTNAME:?BOTNAME is not defined}
       DOMAIN: ${DOMAIN:?DOMAIN is not defined}
+      TZ: ${TZ:?TZ is not defined}
       CLID: ${CLID:?CLID is not defined}
       CLSEC: ${CLSEC:?CLSEC is not defined}
       HUB: ${HUB}
